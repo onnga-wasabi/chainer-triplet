@@ -14,6 +14,8 @@ from chainercv.datasets.cub.cub_label_dataset import CUBLabelDataset
 from chainer.datasets import TransformDataset
 
 from chainer.links.model.vision.vgg import prepare
+import cv2
+cv2.setNumThreads(0)
 
 
 class TripletDataset(chainer.dataset.DatasetMixin):
@@ -42,7 +44,6 @@ class FinetuneVGG(chainer.Chain):
             self.encoder = L.VGG16Layers(pretrained_model='auto')
 
     def forward(self, x):
-        chainer.report({'loss': 1}, self)
         return self.encoder(x, layers=['fc6'])['fc6']
 
     def __call__(self, x_a, x_p, x_n):
@@ -90,7 +91,8 @@ def main():
     # test_idx = get_idx(False)
     # test = TripletDataset(test_core, test_idx)
 
-    train_iter = chainer.iterators.SerialIterator(train, 32)
+    # train_iter = chainer.iterators.SerialIterator(train, 32)
+    train_iter = chainer.iterators.MultiprocessIterator(train, 32)
     # test_iter = chainer.iterators.SerialIterator(test, 32, repeat=False, shuffle=False)
 
     updater = training.updaters.StandardUpdater(train_iter, optimizer, device=device)

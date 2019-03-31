@@ -102,3 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+result/
+CUB_200_2011/
+CUB_200_2011
